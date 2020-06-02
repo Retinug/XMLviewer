@@ -41,7 +41,23 @@ namespace XMLviewer
             {
                 DataSet dataSet = (DataSet)dataGridView.DataSource;
                 dataSet.WriteXml(saveFileDialog.FileName);
+
             }
-        }        
+        }
+
+        private void addColumnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form newDialog = new NewColumn();
+            if (newDialog.ShowDialog(this) == DialogResult.OK)
+            {
+
+            }
+            //dataGridView.Columns.Add()
+        }
+
+        private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dataGridView.Columns.Clear();
+        }
     }
 }
