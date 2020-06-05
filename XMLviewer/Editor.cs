@@ -7,14 +7,23 @@ namespace XMLviewer
 {
     public partial class Editor : Form
     {
+        string tableName;
+
         public Editor()
         {
             InitializeComponent();
+            tableName = "table";
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            InputForm newDialog = new InputForm("Новая таблицы", "Имя таблицы:");
+            if (newDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                dataGridView.Name = newDialog.input;
+                dataGridView.DataSource = null;
+                dataGridView.Rows.Clear();
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -27,6 +36,7 @@ namespace XMLviewer
                 DataSet dataSet = new DataSet();
                 dataSet.ReadXml(xmlReader);
                 dataGridView.DataSource = dataSet.Tables[0];
+                xmlReader.Close();
             }
         }
 
@@ -39,20 +49,33 @@ namespace XMLviewer
         {
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                DataSet dataSet = (DataSet)dataGridView.DataSource;
-                dataSet.WriteXml(saveFileDialog.FileName);
+                DataTable dt = new DataTable(tableName);
+                foreach (DataGridViewColumn col in dataGridView.Columns)
+                {
+                    dt.Columns.Add(col.Name);
+                }
+
+                foreach (DataGridViewRow row in dataGridView.Rows)
+                {
+                    DataRow dRow = dt.NewRow();
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
+                        dRow[cell.ColumnIndex] = cell.Value;
+                    }
+                    dt.Rows.Add(dRow);
+                }
+                dt.WriteXml(saveFileDialog.FileName);
 
             }
         }
 
         private void addColumnToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form newDialog = new NewColumn();
+            InputForm newDialog = new InputForm("Новая колонка", "Название:");
             if (newDialog.ShowDialog(this) == DialogResult.OK)
             {
-
+                dataGridView.Columns.Add(newDialog.input, newDialog.input);
             }
-            //dataGridView.Columns.Add()
         }
 
         private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
